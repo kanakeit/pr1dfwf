@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎡 Колесо Фортуны | Гильдия DELUX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+            font-family: 'Exo 2', sans-serif;
+            padding: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(48px) saturate(1.6);
+            -webkit-backdrop-filter: blur(48px) saturate(1.6);
+            border-radius: 48px;
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+            padding: 30px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 20px;
+                border-radius: 32px;
+            }
+        }
+
+        /* ============================================================
+           ЛЕВАЯ КОЛОНКА — КОЛЕСО
+           ============================================================ */
+        .wheel-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            aspect-ratio: 1/1;
+            margin: 0 auto;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: block;
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffd700, #ff6b00);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .wheel-center::after {
+            content: '🎯';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 22px;
+        }
+
+        .winner-display {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffd700;
+            text-align: center;
+            min-height: 40px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* ============================================================
+           УПРАВЛЕНИЕ
+           ============================================================ */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 20px;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+        .input-group input:focus {
+            border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-gold {
+            background: rgba(255, 215, 0, 0.10);
+            border-color: rgba(255, 215, 0, 0.15);
+        }
+        .btn-gold:hover {
+            background: rgba(255, 215, 0, 0.18);
+            border-color: rgba(255, 215, 0, 0.25);
+        }
+
+        .btn-spin {
+            background: rgba(255, 50, 50, 0.10);
+            border-color: rgba(255, 50, 50, 0.15);
+            font-size: 18px;
+            padding: 18px;
+        }
+        .btn-spin:hover {
+            background: rgba(255, 50, 50, 0.18);
+            border-color: rgba(255, 50, 50, 0.25);
+        }
+        .btn-spin:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .names-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 0;
+            min-height: 40px;
+        }
+
+        .name-tag {
+            padding: 6px 14px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 0.5px solid rgba(255, 255, 255, 0.04);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .name-tag .remove {
+            cursor: pointer;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: #ff3b30;
+            font-size: 14px;
+        }
+        .name-tag .remove:hover {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ============================================================
+           ПРАВАЯ КОЛОНКА — ЧАТ
+           ============================================================ */
+        .chat-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 32px;
+            padding: 20px;
+            border: 0.5px solid rgba(255, 255, 255, 0.04);
+            min-height: 400px;
+        }
+
+        .chat-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 10px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .msg {
+            padding: 8px 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 0.5px solid rgba(255, 255, 255, 0.02);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            animation: fadeIn 0.3s ease;
+            word-break: break-word;
+        }
+
+        .msg .sender {
+            color: #ffd700;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .msg .sender.me {
+            color: #4cd964;
+        }
+        .msg .time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.15);
+            margin-left: 8px;
+        }
+        .msg .system {
+            color: rgba(255, 255, 255, 0.2);
+            font-style: italic;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            color: #fff;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .chat-input input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+        .chat-input input:focus {
+            border-color: rgba(255, 215, 0, 0.2);
+        }
+        .chat-input .btn {
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* ============================================================
+           СТАТУС
+           ============================================================ */
+        .status {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.15);
+            text-align: center;
+            padding-top: 8px;
+            border-top: 0.5px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .status .online {
+            color: #4cd964;
+        }
+        .status .offline {
+            color: #ff3b30;
+        }
+
+        /* ============================================================
+           АНИМАЦИЯ ВЫИГРЫША
+           ============================================================ */
+        @keyframes winPulse {
+            0% { transform: scale(1); color: #ffd700; }
+            50% { transform: scale(1.2); color: #ff6b6b; text-shadow: 0 0 40px rgba(255,215,0,0.5); }
+            100% { transform: scale(1); color: #ffd700; }
+        }
+        .win-anim {
+            animation: winPulse 1s ease-in-out 3;
+        }
+
+        .btn-back {
+            margin-top: 8px;
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 0.5px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.2);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ЛЕВАЯ КОЛОНКА: КОЛЕСО -->
+        <div class="wheel-section">
+            <div class="wheel-wrapper">
+                <canvas id="wheelCanvas" width="600" height="600"></canvas>
+                <div class="wheel-center"></div>
+            </div>
+
+            <div class="winner-display" id="winnerDisplay">🎡 Нажми "Крутить!"</div>
+
+            <div class="controls">
+                <div class="input-group">
+                    <input type="text" id="nameInput" placeholder="Введите имя..." maxlength="20" />
+                    <button class="btn btn-gold" id="addBtn">➕ Добавить</button>
+                </div>
+
+                <div class="names-list" id="namesList"></div>
+
+                <button class="btn btn-spin" id="spinBtn">🎰 КРУТИТЬ КОЛЕСО</button>
+
+                <a href="https://kanaket.github.io/Panda_ff/" class="btn-back">← На главную</a>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: ЧАТ -->
+        <div class="chat-section">
+            <div class="chat-header">💬 ОБЩИЙ ЧАТ</div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg"><span class="system">Подключение к чату...</span></div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Сообщение..." maxlength="100" />
+                <button class="btn btn-gold" id="chatSendBtn">Отправить</button>
+            </div>
+            <div class="status" id="statusDisplay">🔴 Офлайн</div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================================================================
+        // 1. КОЛЕСО ФОРТУНЫ
+        // ================================================================
+
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinBtn');
+        const nameInput = document.getElementById('nameInput');
+        const addBtn = document.getElementById('addBtn');
+        const namesList = document.getElementById('namesList');
+        const winnerDisplay = document.getElementById('winnerDisplay');
+
+        let names = ['Игрок 1', 'Игрок 2', 'Игрок 3', 'Игрок 4', 'Игрок 5'];
+        let isSpinning = false;
+        let currentAngle = 0;
+
+        const COLORS = [
+            '#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#FB923C',
+            '#34D399', '#F472B6', '#60A5FA', '#FBBF24', '#F87171',
+            '#6EE7B7', '#C084FC', '#FCD34D', '#93C5FD', '#FCA5A5'
+        ];
+
+        function drawWheel() {
+            const count = names.length;
+            if (count === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(255,255,255,0.03)';
+                ctx.beginPath();
+                ctx.arc(300, 300, 280, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                ctx.font = '20px Exo 2';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Добавьте имена', 300, 300);
+                return;
+            }
+
+            const arc = (2 * Math.PI) / count;
+            const radius = 280;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < count; i++) {
+                const angle = currentAngle + i * arc;
+                const nextAngle = angle + arc;
+
+                ctx.beginPath();
+                ctx.moveTo(300, 300);
+                ctx.arc(300, 300, radius, angle, nextAngle);
+                ctx.closePath();
+
+                ctx.fillStyle = COLORS[i % COLORS.length];
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Текст
+                ctx.save();
+                ctx.translate(300, 300);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 16px Exo 2';
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 8;
+                const text = names[i];
+                const maxWidth = radius * 0.6;
+                let fontSize = 16;
+                ctx.font = `bold ${fontSize}px Exo 2`;
+                while (ctx.measureText(text).width > maxWidth && fontSize > 10) {
+                    fontSize -= 1;
+                    ctx.font = `bold ${fontSize}px Exo 2`;
+                }
+                ctx.fillText(text, radius * 0.65, 0);
+                ctx.restore();
+            }
+
+            // Внешнее кольцо
+            ctx.beginPath();
+            ctx.arc(300, 300, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(255,215,0,0.15)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Стрелка сверху
+            ctx.fillStyle = '#ff3b30';
+            ctx.shadowColor = 'rgba(255,59,48,0.3)';
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.moveTo(300, 15);
+            ctx.lineTo(290, 5);
+            ctx.lineTo(310, 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function spinWheel() {
+            if (isSpinning || names.length < 2) {
+                if (names.length < 2) {
+                    winnerDisplay.textContent = '⚠️ Добавьте минимум 2 имени!';
+                    winnerDisplay.style.color = '#ff6b6b';
+                }
+                return;
+            }
+
+            isSpinning = true;
+            spinBtn.disabled = true;
+            winnerDisplay.textContent = '🎰 Крутится...';
+            winnerDisplay.style.color = '#ffd700';
+            winnerDisplay.classList.remove('win-anim');
+
+            const spins = 5 + Math.random() * 8;
+            const targetAngle = spins * 2 * Math.PI + Math.random() * 2 * Math.PI;
+
+            const startAngle = currentAngle;
+            const duration = 4000 + Math.random() * 1000;
+            const startTime = performance.now();
+
+            function animateSpin(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                currentAngle = startAngle + targetAngle * eased;
+
+                drawWheel();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateSpin);
+                } else {
+                    currentAngle += targetAngle;
+                    isSpinning = false;
+                    spinBtn.disabled = false;
+
+                    // Определяем победителя
+                    const count = names.length;
+                    const arc = (2 * Math.PI) / count;
+                    const normalized = currentAngle % (2 * Math.PI);
+                    const index = Math.floor(((2 * Math.PI - normalized) % (2 * Math.PI)) / arc) % count;
+
+                    const winner = names[index];
+                    winnerDisplay.textContent = `🏆 ПОБЕДИТЕЛЬ: ${winner}! 🏆`;
+                    winnerDisplay.style.color = '#ffd700';
+                    winnerDisplay.classList.add('win-anim');
+
+                    // Отправляем в чат
+                    sendSystemMessage(`🎉 Колесо выбрало: ${winner}! Поздравляем!`);
+                    setTimeout(() => winnerDisplay.classList.remove('win-anim'), 3000);
+                }
+            }
+
+            requestAnimationFrame(animateSpin);
+        }
+
+        // ================================================================
+        // 2. УПРАВЛЕНИЕ ИМЕНАМИ
+        // ================================================================
+
+        function updateNamesList() {
+            namesList.innerHTML = '';
+            names.forEach((name, index) => {
+                const tag = document.createElement('span');
+                tag.className = 'name-tag';
+                tag.innerHTML = `
+                            ${name}
+                            <button class="remove" data-index="${index}">✕</button>
+                        `;
+                namesList.appendChild(tag);
+            });
+
+            // Удаление имён
+            document.querySelectorAll('.name-tag .remove').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    names.splice(idx, 1);
+                    updateNamesList();
+                    drawWheel();
+                    sendSystemMessage(`👋 ${names[idx] || 'Игрок'} покинул игру`);
+                });
+            });
+
+            drawWheel();
+        }
+
+        addBtn.addEventListener('click', function() {
+            const name = nameInput.value.trim();
+            if (name && !names.includes(name)) {
+                names.push(name);
+                updateNamesList();
+                nameInput.value = '';
+                sendSystemMessage(`👤 ${name} присоединился к игре!`);
+            } else if (names.includes(name)) {
+                winnerDisplay.textContent = '⚠️ Такое имя уже есть!';
+                winnerDisplay.style.color = '#ff6b6b';
+                setTimeout(() => {
+                    winnerDisplay.textContent = '🎡 Нажми "Крутить!"';
+                    winnerDisplay.style.color = '#ffd700';
+                }, 1500);
+            }
+        });
+
+        nameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addBtn.click();
+        });
+
+        spinBtn.addEventListener('click', spinWheel);
+
+        // ================================================================
+        // 3. ЧАТ (локальный + PeerJS для реального времени)
+        // ================================================================
+
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSendBtn = document.getElementById('chatSendBtn');
+        const statusDisplay = document.getElementById('statusDisplay');
+
+        let peer = null;
+        let conn = null;
+        let myId = null;
+        let isHost = false;
+        let roomId = 'panda-fortune-room'; // Общая комната для всех
+
+        // Функция добавления сообщения в чат
+        function addMessage(sender, text, isSystem = false, isMe = false) {
+            const msg = document.createElement('div');
+            msg.className = 'msg';
+            if (isSystem) {
+                msg.innerHTML = `<span class="system">${text}</span>`;
+            } else {
+                const time = new Date().toLocaleTimeString();
+                const senderClass = isMe ? 'me' : '';
+                msg.innerHTML = `
+                            <span class="sender ${senderClass}">${sender}</span>
+                            ${text}
+                            <span class="time">${time}</span>
+                        `;
+            }
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Отправка системного сообщения в чат (локально)
+        function sendSystemMessage(text) {
+            addMessage('', text, true);
+            // Если есть соединение — отправляем всем
+            if (conn && conn.open) {
+                conn.send({ type: 'system', text: text });
+            }
+        }
+
+        // Отправка сообщения от пользователя
+        function sendChatMessage(text) {
+            if (!text.trim()) return;
+            const sender = localStorage.getItem('fortune_username') || 'Гость';
+            addMessage(sender, text, false, true);
+            if (conn && conn.open) {
+                conn.send({ type: 'message', sender: sender, text: text });
+            }
+            chatInput.value = '';
+        }
+
+        // Инициализация PeerJS
+        function initPeer() {
+            // Запрашиваем имя пользователя
+            let username = localStorage.getItem('fortune_username');
+            if (!username) {
+                username = prompt('Введите ваше имя для чата:', 'Гость') || 'Гость';
+                localStorage.setItem('fortune_username', username);
+            }
+
+            peer = new Peer({
+                debug: 2,
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
+
+            peer.on('open', function(id) {
+                myId = id;
+                statusDisplay.innerHTML = '🟢 Онлайн (Подключено)';
+                statusDisplay.className = 'status online';
+
+                // Пытаемся подключиться к комнате
+                connectToRoom(roomId);
+            });
+
+            peer.on('connection', function(incomingConn) {
+                // Кто-то подключается к нам
+                conn = incomingConn;
+                setupConnection();
+            });
+
+            peer.on('error', function(err) {
+                console.error('PeerJS ошибка:', err);
+                statusDisplay.innerHTML = '🟡 Ошибка подключения (работает локально)';
+                statusDisplay.className = 'status offline';
+                // Работаем в локальном режиме
+                addMessage('', '⚡ Работаем в локальном режиме (чат только у вас)', true);
+            });
+        }
+
+        function connectToRoom(roomId) {
+            // Пытаемся подключиться к хосту комнаты
+            const targetId = roomId; // В реальном мире нужен сервер для обмена ID
+            // Но PeerJS не умеет искать комнаты — это демо-версия
+            // Для реальной работы нужен сигнальный сервер
+
+            // В этой демке мы просто показываем чат локально
+            addMessage('', '💬 Чат работает в локальном режиме. Для полноценной работы нужен сервер.', true);
+            statusDisplay.innerHTML = '🟡 Локальный режим';
+            statusDisplay.className = 'status offline';
+        }
+
+        function setupConnection() {
+            conn.on('data', function(data) {
+                if (data.type === 'message') {
+                    addMessage(data.sender, data.text);
+                } else if (data.type === 'system') {
+                    addMessage('', data.text, true);
+                } else if (data.type === 'sync_names') {
+                    // Синхронизация имён (для колеса)
+                    if (data.names && data.names.length > 0) {
+                        names = data.names;
+                        updateNamesList();
+                    }
+                } else if (data.type === 'sync_spin') {
+                    // Синхронизация вращения
+                    if (data.winner) {
+                        winnerDisplay.textContent = `🏆 ПОБЕДИТЕЛЬ: ${data.winner}! 🏆`;
+                        winnerDisplay.style.color = '#ffd700';
+                        winnerDisplay.classList.add('win-anim');
+                        setTimeout(() => winnerDisplay.classList.remove('win-anim'), 3000);
+                    }
+                }
+            });
+
+            // Отправляем текущее состояние
+            conn.send({
+                type: 'sync_names',
+                names: names
+            });
+
+            addMessage('', '🔗 Подключено к серверу!', true);
+        }
+
+        // ================================================================
+        // 4. ОБРАБОТЧИКИ ЧАТА
+        // ================================================================
+
+        chatSendBtn.addEventListener('click', function() {
+            sendChatMessage(chatInput.value);
+        });
+
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage(chatInput.value);
+            }
+        });
+
+        // ================================================================
+        // 5. ЗАПУСК
+        // ================================================================
+
+        // Инициализация
+        updateNamesList();
+
+        // Запускаем чат
+        try {
+            initPeer();
+        } catch (e) {
+            console.warn('PeerJS не загрузился, работаем локально');
+            statusDisplay.innerHTML = '🔴 Офлайн (работает локально)';
+            statusDisplay.className = 'status offline';
+            addMessage('', '💬 Чат работает локально. Подключите интернет для полноценной работы.', true);
+        }
+
+        // Отправляем системное сообщение о старте
+        setTimeout(() => {
+            addMessage('', '🎡 Колесо Фортуны запущено! Добавляйте имена и крутите!', true);
+        }, 500);
+
+        console.log('🎡 Колесо Фортуны загружено!');
+        console.log('Имена:', names);
+        console.log('Чат: локальный режим');
+    </script>
+
+</body>
+</html>
