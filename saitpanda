@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- === ГЛАВНОЕ — ЭТА СТРОКА ФИКСИТ КОДИРОВКУ === -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>@kz.panda_ff | Гильдия DELUX</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ================================================================
+           ГЛОБАЛЬНЫЕ СТИЛИ
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            font-family: 'Exo 2', 'Orbitron', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            
+            /* ФОН ТОЛЬКО САКУРА */
+            background-image: url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-blend-mode: overlay;
+        }
+
+        /* Затемнение для читаемости */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            z-index: 0;
+        }
+
+        /* Визуальный шум */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            background-size: 256px 256px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+            mix-blend-mode: overlay;
+        }
+
+        /* ================================================================
+           ГЛАВНАЯ КАРТОЧКА — LIQUID GLASS
+           ================================================================ */
+        .glass-card {
+            position: relative;
+            z-index: 2;
+            max-width: 400px;
+            width: 100%;
+            padding: 28px 22px 24px;
+            border-radius: 52px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(60px) saturate(1.8) brightness(0.95);
+            -webkit-backdrop-filter: blur(60px) saturate(1.8) brightness(0.95);
+            border: 0.3px solid rgba(255, 255, 255, 0.06);
+            box-shadow:
+                0 40px 100px rgba(0, 0, 0, 0.8),
+                0 0 0 0.5px rgba(255, 255, 255, 0.02) inset,
+                0 1px 0 rgba(255, 255, 255, 0.03) inset,
+                0 -20px 60px rgba(255, 255, 255, 0.005) inset,
+                0 0 80px rgba(255, 215, 0, 0.008);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: liquidFloat 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes liquidFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(60px) scale(0.92) rotateX(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0deg);
+            }
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -0.5px;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.08) 20%, 
+                rgba(255, 255, 255, 0.15) 50%, 
+                rgba(255, 255, 255, 0.08) 80%, 
+                transparent);
+            border-radius: 100%;
+            filter: blur(1px);
+            animation: liquidShine 4s ease-in-out infinite;
+        }
+
+        @keyframes liquidShine {
+            0% { opacity: 0.3; transform: translateX(-10%); }
+            50% { opacity: 1; transform: translateX(10%); }
+            100% { opacity: 0.3; transform: translateX(-10%); }
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5px;
+            left: 15%;
+            right: 15%;
+            height: 1.5px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 215, 0, 0.06) 30%, 
+                rgba(255, 215, 0, 0.10) 50%, 
+                rgba(255, 215, 0, 0.06) 70%, 
+                transparent);
+            border-radius: 100%;
+            filter: blur(1px);
+            animation: liquidReflect 5s ease-in-out infinite;
+        }
+
+        @keyframes liquidReflect {
+            0% { opacity: 0.2; transform: scaleX(0.8); }
+            50% { opacity: 0.8; transform: scaleX(1.2); }
+            100% { opacity: 0.2; transform: scaleX(0.8); }
+        }
+
+        .glass-card .glass-shine {
+            position: absolute;
+            inset: 0;
+            border-radius: 52px;
+            background: 
+                radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(255, 215, 0, 0.02) 0%, transparent 40%);
+            pointer-events: none;
+            animation: glassRipple 6s ease-in-out infinite;
+        }
+
+        @keyframes glassRipple {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+            100% { opacity: 0.3; transform: scale(1); }
+        }
+
+        /* ================================================================
+           ПРОФИЛЬ — ВИДЖЕТ TIKTOK
+           ================================================================ */
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        .tiktok-embed-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            border-radius: 36px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px) saturate(1.2);
+            -webkit-backdrop-filter: blur(24px) saturate(1.2);
+            border: 0.3px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 
+                0 12px 48px rgba(0, 0, 0, 0.3),
+                0 1px 0 rgba(255, 255, 255, 0.02) inset;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        .tiktok-embed-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+            border-radius: 36px;
+        }
+
+        .tiktok-embed-wrapper:hover {
+            transform: translateY(-3px) scale(1.005);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 1px 0 rgba(255, 255, 255, 0.03) inset;
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .tiktok-embed-wrapper blockquote {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }
+
+        .tiktok-embed-wrapper section {
+            background: transparent !important;
+        }
+
+        /* ================================================================
+           КНОПКИ
+           ================================================================ */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px 16px;
+            border: none;
+            border-radius: 26px;
+            font-family: 'Orbitron', 'Exo 2', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(32px) saturate(1.2);
+            -webkit-backdrop-filter: blur(32px) saturate(1.2);
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+            box-shadow:
+                0 4px 32px rgba(0, 0, 0, 0.2),
+                0 1px 0 rgba(255, 255, 255, 0.02) inset;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(255, 215, 0, 0.01) 0%, transparent 40%);
+            pointer-events: none;
+            border-radius: 26px;
+            animation: btnShine 4s ease-in-out infinite;
+        }
+
+        @keyframes btnShine {
+            0% { opacity: 0.2; transform: translateX(-5%); }
+            50% { opacity: 0.6; transform: translateX(5%); }
+            100% { opacity: 0.2; transform: translateX(-5%); }
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), 
+                        rgba(255, 255, 255, 0.06) 0%, 
+                        transparent 50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            border-radius: 26px;
+        }
+
+        .btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px) scale(1.01);
+            background: rgba(255, 255, 255, 0.10);
+            box-shadow:
+                0 12px 48px rgba(0, 0, 0, 0.3),
+                0 1px 0 rgba(255, 255, 255, 0.03) inset;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn .emoji {
+            font-size: 20px;
+            opacity: 0.9;
+            filter: none;
+        }
+
+        .btn-delux {
+            border-color: rgba(255, 215, 0, 0.08);
+            background: rgba(255, 215, 0, 0.04);
+        }
+        .btn-delux:hover {
+            border-color: rgba(255, 215, 0, 0.15);
+            background: rgba(255, 215, 0, 0.08);
+            box-shadow:
+                0 12px 48px rgba(255, 215, 0, 0.05),
+                0 1px 0 rgba(255, 215, 0, 0.02) inset;
+        }
+
+        .btn-donate {
+            border-color: rgba(48, 209, 88, 0.06);
+            background: rgba(48, 209, 88, 0.03);
+        }
+        .btn-donate:hover {
+            border-color: rgba(48, 209, 88, 0.12);
+            background: rgba(48, 209, 88, 0.07);
+            box-shadow:
+                0 12px 48px rgba(48, 209, 88, 0.04),
+                0 1px 0 rgba(48, 209, 88, 0.02) inset;
+        }
+
+        /* ================================================================
+           МОДАЛКИ
+           ================================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(40px) saturate(1.2);
+            -webkit-backdrop-filter: blur(40px) saturate(1.2);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 2000;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-window {
+            max-width: 380px;
+            width: 100%;
+            padding: 34px 28px 28px;
+            border-radius: 44px;
+            background: rgba(10, 10, 20, 0.60);
+            backdrop-filter: blur(72px) saturate(1.8) brightness(0.9);
+            -webkit-backdrop-filter: blur(72px) saturate(1.8) brightness(0.9);
+            border: 0.3px solid rgba(255, 255, 255, 0.04);
+            box-shadow:
+                0 50px 120px rgba(0, 0, 0, 0.8),
+                0 0 0 0.5px rgba(255, 255, 255, 0.01) inset,
+                0 1px 0 rgba(255, 255, 255, 0.02) inset;
+            color: #ffffff;
+            position: relative;
+            animation: modalLiquid 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalLiquid {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.92) rotateX(3deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0deg);
+            }
+        }
+
+        .modal-window::before {
+            content: '';
+            position: absolute;
+            top: -0.5px;
+            left: 10%;
+            right: 10%;
+            height: 1.5px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 215, 0, 0.06) 30%, 
+                rgba(255, 215, 0, 0.12) 50%, 
+                rgba(255, 215, 0, 0.06) 70%, 
+                transparent);
+            border-radius: 100%;
+            filter: blur(1px);
+            animation: modalShine 4s ease-in-out infinite;
+        }
+
+        @keyframes modalShine {
+            0% { opacity: 0.2; transform: translateX(-10%); }
+            50% { opacity: 0.6; transform: translateX(10%); }
+            100% { opacity: 0.2; transform: translateX(-10%); }
+        }
+
+        .modal-window h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .modal-window h2 .gold {
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-window p {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 16px;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 0;
+            text-align: center;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-weight: 400;
+        }
+
+        .modal-window .highlight {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            margin-top: 24px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 34px;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border: 0.3px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            width: 100%;
+            letter-spacing: 0.3px;
+            text-align: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .modal-close:active {
+            transform: scale(0.97);
+        }
+
+        /* ================================================================
+           ФУТЕР
+           ================================================================ */
+        .footer {
+            margin-top: 20px;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.15);
+            text-align: center;
+            letter-spacing: 0.5px;
+            border-top: 0.3px solid rgba(255, 255, 255, 0.02);
+            padding-top: 16px;
+            width: 100%;
+            font-weight: 400;
+        }
+
+        .footer span {
+            display: inline-block;
+            margin: 0 3px;
+        }
+
+        .footer .highlight-text {
+            color: rgba(255, 215, 0, 0.15);
+            font-weight: 500;
+        }
+
+        /* ================================================================
+           АДАПТИВ
+           ================================================================ */
+        @media (max-width: 480px) {
+            .glass-card {
+                padding: 20px 14px 18px;
+                border-radius: 40px;
+            }
+            .btn {
+                font-size: 13px;
+                padding: 15px 12px;
+                border-radius: 22px;
+            }
+            .modal-window {
+                padding: 26px 18px 22px;
+                border-radius: 36px;
+            }
+            .modal-window h2 {
+                font-size: 18px;
+            }
+            .modal-window p {
+                font-size: 15px;
+            }
+            .tiktok-embed-wrapper {
+                border-radius: 28px;
+            }
+            .glass-card .glass-shine {
+                border-radius: 40px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .glass-card {
+                padding: 16px 12px 14px;
+                border-radius: 32px;
+            }
+            .btn {
+                font-size: 12px;
+                padding: 12px 10px;
+                border-radius: 18px;
+            }
+            .btn .emoji {
+                font-size: 16px;
+            }
+            .glass-card .glass-shine {
+                border-radius: 32px;
+            }
+            .modal-window {
+                padding: 22px 14px 18px;
+                border-radius: 30px;
+            }
+            .modal-window h2 {
+                font-size: 16px;
+            }
+            .modal-window p {
+                font-size: 14px;
+            }
+        }
+
+        .tiktok-embed {
+            background: transparent !important;
+        }
+        .tiktok-embed * {
+            background: transparent !important;
+        }
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================
+    ГЛАВНАЯ КАРТОЧКА
+    ================================================================ -->
+    <div class="glass-card">
+        <div class="glass-shine"></div>
+
+        <div class="profile-header">
+            <div class="tiktok-embed-wrapper">
+                <blockquote class="tiktok-embed" 
+                            cite="https://www.tiktok.com/@kz.panda_ff" 
+                            data-unique-id="kz.panda_ff" 
+                            data-embed-type="creator" 
+                            style="max-width: 100%; width: 100%;">
+                    <section>
+                        <a target="_blank" href="https://www.tiktok.com/@kz.panda_ff?refer=creator_embed">@kz.panda_ff</a>
+                    </section>
+                </blockquote>
+                <script async src="https://www.tiktok.com/embed.js"></script>
+            </div>
+        </div>
+
+        <!-- КНОПКИ -->
+        <div class="btn-group">
+            <button class="btn btn-delux" id="btnDelux">
+                <span class="emoji">🛡️</span> Гильдия DELUX
+            </button>
+            <button class="btn btn-donate" id="btnDonate">
+                <span class="emoji">💰</span> Донат
+            </button>
+        </div>
+
+        <!-- ФУТЕР -->
+        <div class="footer">
+            <span class="highlight-text">Контент Мейкер CIS</span>
+            <span>·</span>
+            <span class="highlight-text">Free Firee</span>
+            <span>·</span>
+            <span>UID: 1365580862</span>
+        </div>
+    </div>
+
+    <!-- ================================================================
+    МОДАЛКИ
+    ================================================================ -->
+
+    <!-- Модалка: Гильдия DELUX -->
+    <div class="modal-overlay" id="modalDelux">
+        <div class="modal-window">
+            <h2>Гильдия <span class="gold">DELUX</span></h2>
+            <p>
+                Сәлем Әлем!
+
+                DELUX гильдиясына кіру үшін аптасына <span class="highlight">6000+</span> очко жинау керек
+                және аптасына болатын турнир гильдия ойнау керек.
+
+                WhatsApp: <span class="highlight">87053745908</span>
+            </p>
+            <button class="modal-close" id="closeDelux">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модалка: Донат -->
+    <div class="modal-overlay" id="modalDonate">
+        <div class="modal-window">
+            <h2><span class="gold">Донат</span></h2>
+            <p>
+                Каспи
+                <span class="highlight">87053745908</span>
+                Канагат.Н
+
+                Рахмет бро!
+            </p>
+            <button class="modal-close" id="closeDonate">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- ================================================================
+    JAVASCRIPT
+    ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // МОДАЛКИ
+            // ============================================================
+
+            const modalDelux = document.getElementById('modalDelux');
+            const modalDonate = document.getElementById('modalDonate');
+            const btnDelux = document.getElementById('btnDelux');
+            const btnDonate = document.getElementById('btnDonate');
+            const closeDelux = document.getElementById('closeDelux');
+            const closeDonate = document.getElementById('closeDonate');
+
+            function openModal(modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                if (navigator.vibrate) navigator.vibrate(6);
+            }
+
+            function closeModal(modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            btnDelux.addEventListener('click', () => openModal(modalDelux));
+            btnDonate.addEventListener('click', () => openModal(modalDonate));
+            closeDelux.addEventListener('click', () => closeModal(modalDelux));
+            closeDonate.addEventListener('click', () => closeModal(modalDonate));
+
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) closeModal(this);
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m));
+                }
+            });
+
+            // ============================================================
+            // ЭФФЕКТ НА КНОПКАХ
+            // ============================================================
+
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    this.style.setProperty('--mx', x + '%');
+                    this.style.setProperty('--my', y + '%');
+                });
+            });
+
+            // ============================================================
+            // КОНФЕТТИ
+            // ============================================================
+
+            function createLiquidConfetti(modal) {
+                const colors = ['rgba(255,215,0,0.2)', 'rgba(255,100,100,0.15)', 
+                               'rgba(0,242,254,0.15)', 'rgba(0,255,136,0.12)',
+                               'rgba(255,255,255,0.08)'];
+                const container = modal.querySelector('.modal-window');
+                for (let i = 0; i < 16; i++) {
+                    const dot = document.createElement('div');
+                    const size = 3 + Math.random() * 6;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    dot.style.cssText = `
+                                position: absolute;
+                                width: ${size}px;
+                                height: ${size}px;
+                                background: ${color};
+                                border-radius: 50%;
+                                pointer-events: none;
+                                left: ${5 + Math.random() * 90}%;
+                                top: ${5 + Math.random() * 90}%;
+                                opacity: 0.7;
+                                animation: liquidConfetti ${1.5 + Math.random() * 2.5}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+                                z-index: 10;
+                                backdrop-filter: blur(2px);
+                                border: 0.3px solid rgba(255,255,255,0.03);
+                            `;
+                    container.appendChild(dot);
+                    setTimeout(() => dot.remove(), 4000);
+                }
+            }
+
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = `
+                        @keyframes liquidConfetti {
+                            0% { 
+                                transform: translateY(0) scale(1) rotate(0deg); 
+                                opacity: 0.7;
+                            }
+                            100% { 
+                                transform: translateY(${60 + Math.random() * 80}px) scale(0) rotate(${360 + Math.random() * 360}deg); 
+                                opacity: 0;
+                            }
+                        }
+                    `;
+            document.head.appendChild(styleSheet);
+
+            btnDelux.addEventListener('click', () => {
+                setTimeout(() => createLiquidConfetti(modalDelux), 200);
+            });
+            btnDonate.addEventListener('click', () => {
+                setTimeout(() => createLiquidConfetti(modalDonate), 200);
+            });
+
+            // ============================================================
+            // КЛИК НА ВИДЖЕТ
+            // ============================================================
+
+            document.querySelector('.tiktok-embed-wrapper').addEventListener('click', () => {
+                window.open('https://www.tiktok.com/@kz.panda_ff?is_from_webapp=1&sender_device=pc', '_blank');
+            });
+
+            // ============================================================
+            // МЕРЦАНИЕ СТЕКЛА
+            // ============================================================
+
+            setInterval(() => {
+                const card = document.querySelector('.glass-card');
+                const shine = card.querySelector('.glass-shine');
+                if (shine) {
+                    shine.style.opacity = 0.3 + Math.random() * 0.5;
+                    setTimeout(() => { shine.style.opacity = 0.3; }, 300);
+                }
+            }, 3000);
+
+            console.log('🌸 Сакура фон загружен!');
+            console.log('💎 Liquid Glass активен!');
+            console.log('🔥 Гильдия DELUX готова!');
+
+        })();
+    </script>
+
+</body>
+</html>
